@@ -1,0 +1,43 @@
+Step 1:
+Compile your performance monitoring program (ex. PCM-intel software suite) as usual
+
+=== Subsequent steps requires temporary root access for O(1) operations ===
+
+Step 2a:
+Add required capabilities to the executable files generated. This requires to run one command as root (for instance below, to pcm-sensor.x):
+~# sudo setcap "cap_sys_rawio=ep cap_sys_admin+ep" pcm-sensor.x
+
+Step 2b (optional):
+Check if the required caps are set to the executable:
+~# getcap pcm-sensor.x
+And check that the output include:
+cap_sys_rawio,cap_sys_admin+ep
+
+Note about steps 2a and 2b:
+If your program spawns a new process and this process performs energy measurement, then it needs to inherit required capabilities. Add "i" to the options above and use the command instead for step 2a
+~# sudo setcap "cap_sys_rawio=eip cap_sys_admin=eip" pcm-sensor.x
+Check that the binary indeed received the correct "eip" priviledges (Step 2b):
+~# getcap pcm-sensor.x
+
+Step 3:
+Copy 20-msr.rules to /etc/udev/rules.d/20-msr.rules. Adapt the path to your distribution but avoid chaning the file name by itself unless you know what you do.
+
+Step 4a:
+If necessary, unload the msr kernel module:
+~# sudo rmmod msr
+
+Step 4b:
+Load again the msr kernel module
+~# sudo modprobe msr
+and (optional) make the system to always load the module at boot-time:
+~# echo msr | sudo tee -a /etc/modules
+
+Step 5:
+Disable NMI watchdog as in interferes with the PCM counter library
+~# echo 0 | sudo tee /proc/sys/kernel/nmi_watchdog
+and/or make the change permanent with
+echo 'kernel.nmi_watchdog=0' | sudo tee -a /etc/sysctl.conf
+
+=== No more need of root access for subsequent measurement work ===
+
+Run your performance measurement program with no root priviledges required.
