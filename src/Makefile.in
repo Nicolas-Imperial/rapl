@@ -121,7 +121,7 @@ lib_rapl_ldflags =
 lib_rapl_pkg = 
 ## Flags integrated as non-private pkg-config flags
 ## libs
-lib_rapl_pkg_libs = 
+lib_rapl_pkg_libs = -lm
 ## cflags
 lib_rapl_pkg_cflags = 
 lib_rapl_pkg_description = General research utility library used in PELAB
@@ -139,6 +139,7 @@ shared_rapl_export = $(sharedcc_rapl_src) $(sharedcxx_rapl_src) msr.h cpuid.h
 ## Flags integrated as shareds.private in pkg-config
 shared_rapl_shareds = 
 shared_rapl_ldflags = 
+shared_rapl_pkg_libs = -lm
 shared_rapl_pkg = 
 shared_rapl_cflags_private = -fpic
 ## Flags integrated as non-private pkg-config flags

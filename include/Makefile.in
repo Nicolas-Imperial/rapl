@@ -1,5 +1,5 @@
 ## All files to include in a distribution package
-attach = 
+attach = rapl.h
 
 ## Further directories to follow
 subdirs =
