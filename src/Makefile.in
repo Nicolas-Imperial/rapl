@@ -1,0 +1,201 @@
+## It's OK to define global libs and ldflags here as they are defined as private in the libsries pkg-config file
+## Restrain yourself to define dependency packages here as they are generated in the public field of pkg-config
+
+## Package configuration
+CONFIG = RELEASE
+
+## C global parameters
+CFLAGS_BASE = 
+CFLAGS_PRIVATE = -isystem ../include 
+CFLAGS_CONFIG_RELEASE = -O3 -DNDEBUG
+CFLAGS_CONFIG_DEBUG = -g -O0 -DDEBUG=1
+CC_LDFLAGS = 
+CC_DEPS =
+CC_PKG = 
+CC_LIBS =
+CC_TEST_PKG = $(CC_PKG) 
+CC_TEST_LIBS = $(CC_LIBS) 
+CC_TEST_DEPS = $(CC_DEPS)
+CC_TEST_LDFLAGS = -L.
+
+## C++ global parameters
+CXXFLAGS_BASE = 
+CXXFLAGS_PRIVATE = -isystem ../include
+CXXFLAGS_CONFIG_RELEASE = -O3 -DNDEBUG
+CXXFLAGS_CONFIG_DEBUG = -g -O0 -DDEBUG=1
+CXX_LDFLAGS = 
+CXX_DEPS = 
+CXX_PKG = 
+CXX_LIBS = 
+CXX_TEST_PKG = $(CXX_PKG) 
+CXX_TEST_LIBS = $(CXX_LIBS)
+CXX_TEST_DEPS = $(CXX_DEPS)
+CXX_TEST_LDFLAGS = -L.
+
+## List of (pkg-config) packages this project depends on
+## This affects CFLAGS, CXXFLAGS and LDFLAGS
+# CXX_PKG = libfoo++
+# CXX_PKG_libfoo++_version = >= 2.34.3
+
+## List of (pg-config) packages this project depends on
+## This affects CFLAGS, CXXFLAGS and LDFLAGS for tests
+LIBS_TEST = 
+PKG_TEST = 
+
+## Cross-package flags for individual c/c++ source files
+#CFLAGS_foo.c = -DFOO_CROSS=foo_cross
+#CXXFLAGS_bar.cpp = -DBAR_CROSS=bar_cross
+
+## C-compiled programs and their sources
+bincc_package = power_gadget
+## Static C++ library packages and their sources
+bincxx_package = 
+
+bincc_power_gadget_src = power_gadget.c
+bincxx_power_gadget_src = 
+bin_power_gadget_export = $(bincc_power_gadget_src) $(bincxx_power_gadget_src)
+bin_power_gadget_deps = librapl.so
+bin_power_gadget_pkg = 
+bin_power_gadget_libs = -lrapl -lm -pthread -fopenmp
+bin_power_gadget_ldflags =
+bin_power_gadget_cflags =
+bin_power_gadget_cflags_private = -pg -pthread -fopenmp
+bin_power_gadget_embed = 
+bin_power_gadget_static = 0
+
+bincc__src = 
+bincxx__src = 
+bin__export = $(bincc__src) $(bincxx__src)
+bin__deps = 
+bin__pkg = 
+bin__libs = 
+bin__ldflags =
+bin__cflags =
+bin__cflags_private = 
+bin__embed = 
+
+## Example
+## List of packages
+# bincc_package = foo bar
+
+## Source files for C package foo
+# bincc_foo_src = foo.c
+## C++ Source files for C package foo
+# bincxx_foo_src = foo.c
+## cflags for source file foo.c when used to build package foo
+# bin_foo_cflags_foo.c = -DFOO_PACKAGE=foo_package
+## Package foo is rebuilt upon modifications of files in this list
+# bin_foo_deps = $(FOO_DEPS)/foodeps.a
+## Dependencies of package foo to other external packages resolvable by pkg-config
+# bin_foo_pkg = foolib
+## Minimal version of external dependency foolib
+# bin_foo_pkg_foolib_version = >= 3.15.2
+## Manual arbitrary addictional libs required to build package foo
+# bin_foo_libs = -lm -lmanual_lib_foo
+## Linker options to build package foo
+# bin_foo_ldflags = -L$(MANUAL_LIB_FOO_SRC)/src
+## cflag options to build objects of package foo
+# bin_foo_cflags = -isystem $(INCLUDE_DIR)
+## cflag options to build objects of package foo, that does not appear in the generated pkg-config file
+# bin_foo_cflags_private = 
+## Embed these files into the final excutable
+# bin_foo_embed = foo-res.xml
+## Files to exports when building a source package for foo: foo source files and non-source foo-res.xml to be integrated in the binary package
+# bin_foo_export = $(bincc_foo_src) foo-res.xml
+
+## Source files for C package bar
+## The package bar is minimal: one source file, no library
+# bincc_bar_src = bar.c
+# bincxx_bar_src = 
+# bin_bar_export = $(bincc_bar_src) $(bincxx_bar_src)
+
+## Static C/C++ library packages and their sources
+lib_package = rapl
+
+libcc_rapl_src = msr.c cpuid.c rapl.c
+libcxx_rapl_src =
+lib_rapl_export = $(libcc_rapl_src) $(libcxx_rapl_src) msr.h cpuid.h
+## Flags integrated as libs.private in pkg-config
+lib_rapl_libs = 
+lib_rapl_ldflags = 
+lib_rapl_pkg = 
+## Flags integrated as non-private pkg-config flags
+## libs
+lib_rapl_pkg_libs = 
+## cflags
+lib_rapl_pkg_cflags = 
+lib_rapl_pkg_description = General research utility library used in PELAB
+lib_rapl_pkg_url = http://www.ida.liu.se/~nicme26
+## Rebuild the library upon changes in these files
+lib_rapl_deps =
+## Embed these files into the final archive
+lib_rapl_embed = 
+
+sharedcc_package = rapl
+
+sharedcc_rapl_src = msr.c cpuid.c rapl.c
+sharedcxx_rapl_src =
+shared_rapl_export = $(sharedcc_rapl_src) $(sharedcxx_rapl_src) msr.h cpuid.h
+## Flags integrated as shareds.private in pkg-config
+shared_rapl_shareds = 
+shared_rapl_ldflags = 
+shared_rapl_pkg = 
+shared_rapl_cflags_private = -fpic
+## Flags integrated as non-private pkg-config flags
+## shareds
+shared_rapl_pkg_shareds = 
+## cflags
+shared_rapl_pkg_cflags = 
+shared_rapl_pkg_description = General research utility sharedrary used in PELAB
+shared_rapl_pkg_url = http://www.ida.liu.se/~nicme26
+## Rebuild the sharedrary upon changes in these files
+shared_rapl_deps =
+## Embed these files into the final archive
+shared_rapl_embed = 
+
+## Static C/C++ library packages and their sources
+libcc__src =
+libcxx__src =
+lib__export = $(libcc__src) $(libcxx__src)
+## Flags integrated as libs.private in pkg-config
+lib__libs = 
+lib__ldflags = 
+lib__pkg = 
+## Flags integrated as non-private pkg-config flags
+## libs
+lib__pkg_libs = 
+## cflags
+lib__pkg_cflags = 
+lib__pkg_description = General research utility library used in PELAB
+lib__pkg_url = http://www.ida.liu.se/~nicme26
+## Rebuild the library upon changes in these files
+lib__deps =
+## Embed these files into the final archive
+lib__embed = 
+
+
+## C test packages and their sources
+testcc_package = 
+## C++ test packages and their sources
+testcxx_package = 
+
+testcc__src =  
+testcxx__src =  
+test__export = $(testcc__src) $(testcxx__src)
+test__deps = 
+test__pkg = 
+test__libs = 
+test__ldflags = 
+test__cflags = 
+test__cflags_private = 
+
+## Where to continue compiling
+subdirs = 
+
+## Additional settings
+clean = *.o *.txt *.fig *.bin *.e *.d *.obj
+
+## Targets to run before any other target runs
+## Can be a custom target
+## To target by default
+#FIRST=

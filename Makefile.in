@@ -1,0 +1,20 @@
+package = C-C++_Project
+version = 1
+minor = 0
+release = 0
+
+prefix = /usr/local
+exec_prefix = $(prefix)
+bindir = $(exec_prefix)/bin
+libdir = $(exec_prefix)/lib
+sharedir = $(exec_prefix)/share/$(package)
+includedir = $(prefix)/include
+
+CONFIG = RELEASE
+
+subdirs = src include
+
+## Targets to run before any other target runs
+## Can be a custom target
+## To target by default
+FIRST=
