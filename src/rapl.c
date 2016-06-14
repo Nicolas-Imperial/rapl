@@ -36,6 +36,22 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "msr.h"
 #include "rapl.h"
 
+#if 10
+#define debug(var) printf("[%s:%s:%d] %s = \"%s\"\n", __FILE__, __FUNCTION__, __LINE__, #var, var); fflush(NULL)
+#define debug_addr(var) printf("[%s:%s:%d] %s = \"%p\"\n", __FILE__, __FUNCTION__, __LINE__, #var, var); fflush(NULL)
+#define debug_int(var) printf("[%s:%s:%d] %s = \"%d\"\n", __FILE__, __FUNCTION__, __LINE__, #var, var); fflush(NULL)
+#define debug_uint(var) printf("[%s:%s:%d] %s = \"%u\"\n", __FILE__, __FUNCTION__, __LINE__, #var, var); fflush(NULL)
+#define debug_size_t(var) printf("[%s:%s:%d] %s = \"%zu\"\n", __FILE__, __FUNCTION__, __LINE__, #var, var); fflush(NULL)
+#define debug_ulong(var) printf("[%s:%s:%d] %s = \"%lu\"\n", __FILE__, __FUNCTION__, __LINE__, #var, var); fflush(NULL)
+#else
+#define debug(var)
+#define debug_addr(var)
+#define debug_int(var)
+#define debug_uint(var)
+#define debug_size_t(var)
+#define debug_ulong(var)
+#endif
+
 /* rapl msr availablility */
 #define MSR_SUPPORT_MASK 0xff
 unsigned char *msr_support_table;
@@ -96,6 +112,14 @@ uint64_t  get_num_rapl_nodes_pkg();
 uint64_t  get_num_rapl_nodes_pkg();
 uint64_t  get_num_rapl_nodes_pkg();
 
+APIC_ID_t**
+rapl_get_topology(uint64_t *pkg_num, uint64_t *core_per_pkg)
+{
+	*pkg_num = num_nodes;
+	*core_per_pkg = num_pkg_cores;
+	return pkg_map;
+}
+
 // OS specific
 int
 bind_context(cpu_set_t *new_context, cpu_set_t *old_context) {
@@ -110,8 +134,12 @@ bind_context(cpu_set_t *new_context, cpu_set_t *old_context) {
     }
 
     err += sched_setaffinity(0, sizeof(cpu_set_t), new_context);
+	//debug_int(err);
     if(0 != err)
+	{
+	//perror("Hello?");
         ret = MY_ERROR;
+	}
 
     return ret;
 }
@@ -121,7 +149,9 @@ bind_cpu(uint64_t cpu, cpu_set_t *old_context) {
 
     int err = 0;
     cpu_set_t cpu_context;
+//debug_ulong(cpu);
 
+	//debug_ulong(cpu);
     CPU_ZERO(&cpu_context);
     CPU_SET(cpu, &cpu_context);
     err += bind_context(&cpu_context, old_context);
@@ -166,9 +196,10 @@ build_topology() {
     // Construct an os map: os_map[APIC_ID ... APIC_ID]
     os_map = (APIC_ID_t *) malloc(os_cpu_count * sizeof(APIC_ID_t));
 
-    for(i=0; i < os_cpu_count; i++){
-
+    for(i=0; i < os_cpu_count; i++)
+    {
         err = bind_cpu(i, &prev_context);
+//debug_int(err);
 
         cpuid_info_t info_l0 = get_processor_topology(0);
         cpuid_info_t info_l1 = get_processor_topology(1);
@@ -179,14 +210,17 @@ build_topology() {
         num_core_threads = info_l0.ebx & 0xffff;
         num_pkg_threads = info_l1.ebx & 0xffff;
 
+//debug_ulong(os_map[i].core_id);
+//debug_ulong(os_map[i].pkg_id);
         if(os_map[i].pkg_id > max_pkg)
             max_pkg = os_map[i].pkg_id;
+//debug_ulong(max_pkg);
 
         err = bind_context(&prev_context, NULL);
+//debug_int(err);
 
         //printf("smt_id: %u core_id: %u pkg_id: %u os_id: %u\n",
         //   os_map[i].smt_id, os_map[i].core_id, os_map[i].pkg_id, os_map[i].os_id);
-
     }
 
     num_pkg_cores = num_pkg_threads / num_core_threads;
@@ -214,6 +248,7 @@ build_topology() {
 }
 
 int read_rapl_units();
+
 /*!
  * \brief Intialize the power_gov library for use.
  *
@@ -455,6 +490,7 @@ get_num_rapl_nodes_dram()
     return num_nodes;
 }
 
+#if 1
 uint64_t
 pkg_node_to_cpu(uint64_t node)
 {
@@ -478,13 +514,37 @@ dram_node_to_cpu(uint64_t node)
 {
     return pkg_map[node][0].os_id;
 }
+#else
+uint64_t
+pkg_node_to_cpu(uint64_t node)
+{
+    return node;
+}
+
+uint64_t
+pp0_node_to_cpu(uint64_t node)
+{
+    return node;
+}
+
+uint64_t
+pp1_node_to_cpu(uint64_t node)
+{
+    return node;
+}
+
+uint64_t
+dram_node_to_cpu(uint64_t node)
+{
+    return node;
+}
+#endif
 
 double
 convert_to_watts(uint64_t raw)
 {
     return RAPL_POWER_UNIT * raw;
 }
-
 double
 convert_to_joules(uint64_t raw)
 {
@@ -576,7 +636,7 @@ get_rapl_power_limit_control(uint64_t                    cpu,
 
     err = !is_supported_msr(msr_address);
     if (!err) {
-        bind_cpu(cpu, &old_context); // improve performance on Linux
+		bind_cpu(cpu, &old_context); // improve performance on Linux
         err = read_msr(cpu, msr_address, &msr);
         bind_context(&old_context, NULL);
     }
@@ -607,9 +667,11 @@ get_total_energy_consumed(uint64_t  cpu,
 
     err = !is_supported_msr(msr_address);
     if (!err) {
-        bind_cpu(cpu, &old_context); // improve performance on Linux
+		// This bind_cpu and bind_context is commented out because it causes random ~2-second delays
+		// when run with the GPU meter
+        //bind_cpu(cpu, &old_context); // improve performance on Linux
         err = read_msr(cpu, msr_address, &msr);
-        bind_context(&old_context, NULL);
+        //bind_context(&old_context, NULL);
     }
 
     if(!err) {
@@ -1305,18 +1367,17 @@ get_os_freq(uint64_t cpu, uint64_t *freq)
     int out = 0;
     FILE *fp;
 
-    out = sprintf(path, "%s%" PRIu64 "%s", "/sys/devices/system/cpu/cpu",cpu,"/cpufreq/cpuinfo_cur_freq");
+    out = sprintf(path, "%s%lu%s", "/sys/devices/system/cpu/cpu",cpu,"/cpufreq/cpuinfo_cur_freq");
 
     if(out > 0)
         fp = fopen(path, "r");
 
     if(NULL != fp){
-        size_t s = fscanf(fp, "%" PRIu64, freq);
+        int ret = fscanf(fp, "%lu", freq);
         fclose(fp);
-
-	if(s > 0)
+	if(ret == 0 || ret == EOF)
 	{
-		ret = MY_ERROR;
+		fprintf(stderr, "[%s:%d] Could not read symbol from input, abort.\n", __FILE__, __LINE__);
 	}
     }
     else{

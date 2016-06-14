@@ -18,6 +18,22 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #include "msr.h"
 
+#if 10
+#define debug(var) printf("[%s:%s:%d] %s = \"%s\"\n", __FILE__, __FUNCTION__, __LINE__, #var, var); fflush(NULL)
+#define debug_addr(var) printf("[%s:%s:%d] %s = \"%p\"\n", __FILE__, __FUNCTION__, __LINE__, #var, var); fflush(NULL)
+#define debug_int(var) printf("[%s:%s:%d] %s = \"%d\"\n", __FILE__, __FUNCTION__, __LINE__, #var, var); fflush(NULL)
+#define debug_uint(var) printf("[%s:%s:%d] %s = \"%u\"\n", __FILE__, __FUNCTION__, __LINE__, #var, var); fflush(NULL)
+#define debug_size_t(var) printf("[%s:%s:%d] %s = \"%zu\"\n", __FILE__, __FUNCTION__, __LINE__, #var, var); fflush(NULL)
+#define debug_ulong(var) printf("[%s:%s:%d] %s = \"%lu\"\n", __FILE__, __FUNCTION__, __LINE__, #var, var); fflush(NULL)
+#else
+#define debug(var)
+#define debug_addr(var)
+#define debug_int(var)
+#define debug_uint(var)
+#define debug_size_t(var)
+#define debug_ulong(var)
+#endif
+
 
 /*
  * read_msr
@@ -36,11 +52,22 @@ read_msr(int       cpu,
     sprintf(msr_path, "/dev/cpu/%d/msr", cpu);
     err = ((fp = fopen(msr_path, "r")) == NULL);
     if (!err)
+	{
         err = (fseek(fp, address, SEEK_CUR) != 0);
+	}
+	else
+	{
+		//perror("Could not file msr device");
+	}
     if (!err)
-        err = (fread(value, sizeof(uint64_t), 1, fp) != 1);
+	{
+        err = (fread(value, sizeof(uint64_t), 1, fp));
+	err = (err != 1);
+	}
     if (fp != NULL)
+	{
         fclose(fp);
+	}
     return err;
 }
 

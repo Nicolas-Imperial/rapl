@@ -22,9 +22,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #include <stdint.h>
 
-#define __STDC_FORMAT_MACROS
-#include <inttypes.h>
-
 #define MY_ERROR -1
 
 /* Power Domains */
@@ -118,6 +115,9 @@ typedef struct pp0_rapl_power_limit_control_t {
     uint64_t clamp_enabled;
     uint64_t lock_enabled;
 } pp0_rapl_power_limit_control_t;
+
+APIC_ID_t** rapl_get_topology(uint64_t *pkg_num, uint64_t *core_per_pkg);
+
 int get_pp0_rapl_power_limit_control_t(uint64_t node, pp0_rapl_power_limit_control_t *rapl_power_limit_control);
 int get_pp0_total_energy_consumed(uint64_t node, double *total_energy_consumed);
 int get_pp0_balance_policy(uint64_t node, uint64_t *priority_level);

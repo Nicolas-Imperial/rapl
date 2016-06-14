@@ -22,14 +22,16 @@ cpuid(uint32_t eax_in, uint32_t ecx_in,
     asm (
 #if defined(__LP64__)           /* 64-bit architecture */
         "cpuid;"                /* execute the cpuid instruction */
-        "movl %%ebx, %[ebx];"   /* save ebx output */
+//        "movl %%ebx, %[ebx];"   /* save ebx output */
+//        : "=a"(ci->eax), [ebx] "=r"(ci->ebx), "=c"(ci->ecx), "=d"(ci->edx)
+        : "=a"(ci->eax), "=b"(ci->ebx), "=c"(ci->ecx), "=d"(ci->edx)
 #else                           /* 32-bit architecture */
         "pushl %%ebx;"          /* save ebx */
         "cpuid;"                /* execute the cpuid instruction */
         "movl %%ebx, %[ebx];"   /* save ebx output */
         "popl %%ebx;"           /* restore ebx */
-#endif
         : "=a"(ci->eax), [ebx] "=r"(ci->ebx), "=c"(ci->ecx), "=d"(ci->edx)
+#endif
         : "a"(eax_in), "c"(ecx_in)
     );
 }
