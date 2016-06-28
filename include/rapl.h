@@ -20,6 +20,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #ifndef _h_rapl
 #define _h_rapl
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include <stdint.h>
 
 #define MY_ERROR -1
@@ -147,5 +152,9 @@ int read_tsc(uint64_t *tsc);
 
 /* Required by Power Gadget */
 int get_pp0_freq_mhz(uint64_t node, uint64_t *freq);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
