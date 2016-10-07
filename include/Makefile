@@ -54,7 +54,7 @@ install: pre-install do-install submake-install post-install
 pre-install:
 
 do-install:
-	install -d $(DESTDIR)$(prefix)/$(subdir)
+	$(if $(strip $(attach)),test -d $(DESTDIR)$(prefix)/$(subdir) || install -d $(DESTDIR)$(prefix)/$(subdir))
 	$(if $(strip $(attach)),install -m 644 $(attach) $(DESTDIR)$(prefix)/$(subdir))
 
 post-install:
