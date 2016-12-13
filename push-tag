@@ -16,12 +16,7 @@ scp `ls *.tar.gz|sort -Vr|head -1` $target/download/
 
 ## Generate documentation and copy it in output directory
 make doc
-echo '<!--#set var='\"absolute\" value=\"/labs/pelab/drake/\"'-->' | tee -a doc/drake-data.shtml
-#echo '<!--#set var="script_url" value="$SCRIPT_URL" -->' | tee -a doc/drake-data.shtml
-#echo '<!--#if expr="${script_url} != '"/^\/~/"' " -->' | tee -a doc/drake-data.shtml
-echo '<!--#set var='\"relative\" value=\"../\"'-->' | tee -a doc/drake-data.shtml
-#echo '<!--#else -->' | tee -a doc/drake-data.shtml
-#echo '<!--#set var='\"relative\" value=\"\"'-->' | tee -a doc/drake-data.shtml
-#echo '<!--#endif -->' | tee -a doc/drake-data.shtml
+echo '<!--#set var='\"absolute\" value=\"/labs/pelab/pcm-userspace/\"'-->' | tee -a doc/pcm-userspace-data.shtml
+echo '<!--#set var='\"relative\" value=\"../\"'-->' | tee -a doc/pcm-userspace-data.shtml
 scp -r doc/* $target
 
