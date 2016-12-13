@@ -62,7 +62,7 @@ $(abspath $(distdir)): $(abspath $(distdir))-reset submake-dist
 	mkdir -p $(abspath $(distdir))
 	cp Makefile $(abspath $(distdir))
 	cp Makefile.in $(abspath $(distdir))
-	cp $(attach) $(abspath $(distdir))
+	$(if $(strip $(attach)),cp $(attach) $(distdir))
 	
 clean: submake-clean clean-tree clean-dist
 
