@@ -16,6 +16,7 @@ scp `ls *.tar.gz|sort -Vr|head -1` $target/download/
 
 ## Generate documentation and copy it in output directory
 make doc
+mkdir -p doc
 echo '<!--#set var='\"absolute\" value=\"/~nicme26/dev/drake/\"'-->' | tee -a doc/pcm-userspace-data.shtml
 echo '<!--#set var='\"relative\" value=\"../\"'-->' | tee -a doc/pcm-userspace-data.shtml
 scp -r doc/* $target
