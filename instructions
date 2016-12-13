@@ -6,6 +6,7 @@ Compile your performance monitoring program (ex. PCM-intel software suite) as us
 Step 2a:
 Add required capabilities to the executable files generated. This requires to run one command as root (for instance below, to pcm-sensor.x):
 ~# sudo setcap "cap_sys_rawio=ep cap_sys_admin+ep" pcm-sensor.x
+See the manual page capabilities(7) to get a list of priviledges the binary receives with these priviledges. In short, plently security holes are opened through these capabilities, yet they require more effort to exploit than a root access.
 
 Step 2b (optional):
 Check if the required caps are set to the executable:
