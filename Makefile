@@ -32,6 +32,8 @@ export
 	
 include Makefile.in
 
+prefix := $(if $(prefix),$(prefix),$(call PREFIX_$(CONFIG)))
+
 tarname = $(package)
 distdir = $(abspath $(tarname)-$(version).$(minor).$(release))
 
@@ -62,7 +64,7 @@ $(abspath $(distdir)): $(abspath $(distdir))-reset submake-dist
 	mkdir -p $(abspath $(distdir))
 	cp Makefile $(abspath $(distdir))
 	cp Makefile.in $(abspath $(distdir))
-	$(if $(strip $(attach)),cp $(attach) $(distdir))
+	cp $(attach) $(abspath $(distdir))
 	
 clean: submake-clean clean-tree clean-dist
 
