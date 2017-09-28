@@ -61,6 +61,9 @@ double RAPL_TIME_UNIT;
 double RAPL_ENERGY_UNIT;
 double RAPL_POWER_UNIT;
 
+double MAX_ENERGY_STATUS_JOULES;   /* default: 65536 */
+double MAX_THROTTLED_TIME_SECONDS; /* default: 4194304 */
+
 uint64_t  num_nodes = 0;
 uint64_t num_core_threads = 0; // number of physical threads per core
 uint64_t num_pkg_threads = 0;  // number of physical threads per package
